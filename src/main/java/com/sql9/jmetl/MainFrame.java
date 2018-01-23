@@ -58,8 +58,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	private JButton _$25;
 	private JButton _$24;
 	private JButton _$23;
-	private JComboBox _$22;
-	private JComboBox _$21;
+	private JComboBox<String> _$22;
+	private JComboBox<String> _$21;
 	private JPasswordField _$20;
 	private JLabel _$19;
 	private JLabel _$18;
@@ -105,8 +105,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	private void _$1() {
 		this._$19 = new JLabel();
 		this._$18 = new JLabel();
-		this._$22 = new JComboBox();
-		this._$21 = new JComboBox();
+		this._$22 = new JComboBox<String>();
+		this._$21 = new JComboBox<String>();
 		this._$1 = new JTextField();
 		this._$5 = new JPasswordField();
 		this._$2 = new JTextField();
@@ -155,7 +155,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		this._$22.setEditable(true);
 		this._$22.setFont(new Font("宋体", 0, 12));
 		this._$22.setMaximumRowCount(10);
-		this._$22.setModel(new DefaultComboBoxModel(new String[]{"jdbc:postgresql://{host}:{port}/{database}",
+		this._$22.setModel(new DefaultComboBoxModel<String>(new String[]{"jdbc:postgresql://{host}:{port}/{database}",
 				"jdbc:sybase:Tds:{host}:{port}/{database}", "jdbc:oracle:thin:@{host}:{port}:{database}",
 				"jdbc:mysql://{host}:{port}/{database}", "jdbc:db2://{host}:{port}/{database}",
 				"jdbc:sqlserver://{host}:{port};DatabaseName={database}", "jdbc:cubrid:{host}:{port}:{database}:::",
@@ -165,7 +165,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		this._$21.setEditable(true);
 		this._$21.setFont(new Font("宋体", 0, 12));
 		this._$21.setMaximumRowCount(10);
-		this._$21.setModel(new DefaultComboBoxModel(new String[]{"jdbc:postgresql://{host}:{port}/{database}",
+		this._$21.setModel(new DefaultComboBoxModel<String>(new String[]{"jdbc:postgresql://{host}:{port}/{database}",
 				"jdbc:sybase:Tds:{host}:{port}/{database}", "jdbc:oracle:thin:@{host}:{port}:{database}",
 				"jdbc:mysql://{host}:{port}/{database}", "jdbc:db2://{host}:{port}/{database}",
 				"jdbc:sqlserver://{host}:{port};DatabaseName={database}", "jdbc:cubrid:{host}:{port}:{database}:::",
