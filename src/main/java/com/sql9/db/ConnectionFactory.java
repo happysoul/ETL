@@ -19,7 +19,7 @@ public class ConnectionFactory {
             return new DB2Connection(db);
         }
         if (dbtype.equals(DBType.MySQL)) {
-            return new XxConnection(db);
+            return new MysqlConnection(db);
         }
         if (dbtype.equals(DBType.Oracle)) {
             return new OracleConnection(db);

@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-class XxConnection extends DBConnection {
-    public XxConnection(CommonDB db) throws Exception {
+class MysqlConnection extends DBConnection {
+    public MysqlConnection(CommonDB db) throws Exception {
         super(db);
         executeUpdate("SET sql_mode='ANSI_QUOTES'", new Object[0]);
     }
