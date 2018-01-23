@@ -58,9 +58,10 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	private JButton _$25;
 	private JButton _$24;
 	private JButton _$23;
-	private JComboBox<String> _$22;
-	private JComboBox<String> _$21;
-	private JPasswordField _$20;
+	private JComboBox<String> srcUrl;
+	private JComboBox<String> desUrl;
+	private JPasswordField desPassword;
+	private JPasswordField srcPassword;
 	private JLabel _$19;
 	private JLabel _$18;
 	private JLabel _$17;
@@ -75,14 +76,13 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	private JScrollPane _$8;
 	private JScrollPane _$7;
 	private JScrollPane _$6;
-	private JPasswordField _$5;
 	private JTextArea _$4;
 	private JTextArea _$3;
 	private JTextField _$2;
 	private JTextField _$1;
 
 	public MainFrame() {
-		this._$1();
+		this.init();
 
 		try {
 			this._$31 = new FileWriter("error.log");
@@ -102,15 +102,15 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		}
 	}
 
-	private void _$1() {
+	private void init() {
 		this._$19 = new JLabel();
 		this._$18 = new JLabel();
-		this._$22 = new JComboBox<String>();
-		this._$21 = new JComboBox<String>();
+		this.srcUrl = new JComboBox<String>();
+		this.desUrl = new JComboBox<String>();
 		this._$1 = new JTextField();
-		this._$5 = new JPasswordField();
+		this.srcPassword = new JPasswordField();
 		this._$2 = new JTextField();
-		this._$20 = new JPasswordField();
+		this.desPassword = new JPasswordField();
 		this._$8 = new JScrollPane();
 		this._$16 = new JList<String>();
 		this._$28 = new JButton();
@@ -145,40 +145,50 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		this.setName("mainframe");
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-		        _$1(evt);
+				closeWindowFrame(evt);
 		    }
 		});
 		this._$19.setText(bundle.getString("sourcedb"));
 		this._$19.setToolTipText(bundle.getString("sourcedb.tooltip"));
 		this._$18.setText(bundle.getString("TargetDB"));
 		this._$18.setToolTipText(bundle.getString("The_target_database_connection_to_import_data."));
-		this._$22.setEditable(true);
-		this._$22.setFont(new Font("宋体", 0, 12));
-		this._$22.setMaximumRowCount(10);
-		this._$22.setModel(new DefaultComboBoxModel<String>(new String[]{"jdbc:postgresql://{host}:{port}/{database}",
-				"jdbc:sybase:Tds:{host}:{port}/{database}", "jdbc:oracle:thin:@{host}:{port}:{database}",
-				"jdbc:mysql://{host}:{port}/{database}", "jdbc:db2://{host}:{port}/{database}",
-				"jdbc:sqlserver://{host}:{port};DatabaseName={database}", "jdbc:cubrid:{host}:{port}:{database}:::",
-				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}", "jdbc:sqlite:{database}"}));
-		this._$22.setToolTipText(
-				bundle.getString("The_source_connection_string,_please_replace_the_{}_with_proper_value"));
-		this._$21.setEditable(true);
-		this._$21.setFont(new Font("宋体", 0, 12));
-		this._$21.setMaximumRowCount(10);
-		this._$21.setModel(new DefaultComboBoxModel<String>(new String[]{"jdbc:postgresql://{host}:{port}/{database}",
-				"jdbc:sybase:Tds:{host}:{port}/{database}", "jdbc:oracle:thin:@{host}:{port}:{database}",
-				"jdbc:mysql://{host}:{port}/{database}", "jdbc:db2://{host}:{port}/{database}",
-				"jdbc:sqlserver://{host}:{port};DatabaseName={database}", "jdbc:cubrid:{host}:{port}:{database}:::",
-				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}", "jdbc:sqlite:{database}"}));
-		this._$21.setToolTipText(
-				bundle.getString("The_target_connection_string,_please_replace_the_{}_with_proper_value"));
+		this.srcUrl.setEditable(true);
+		this.srcUrl.setFont(new Font("宋体", 0, 12));
+		this.srcUrl.setMaximumRowCount(10);
+		this.srcUrl.setModel(new DefaultComboBoxModel<String>(new String[]{
+				"jdbc:postgresql://{host}:{port}/{database}",
+				"jdbc:sybase:Tds:{host}:{port}/{database}",
+				"jdbc:oracle:thin:@{host}:{port}:{database}",
+				"jdbc:mysql://{host}:{port}/{database}",
+				"jdbc:db2://{host}:{port}/{database}",
+				"jdbc:sqlserver://{host}:{port};DatabaseName={database}",
+				"jdbc:cubrid:{host}:{port}:{database}:::",
+				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}",
+				"jdbc:sqlite:{database}"}));
+		this.srcUrl.setToolTipText(bundle.getString("The_source_connection_string,_please_replace_the_{}_with_proper_value"));
+		
+		this.desUrl.setEditable(true);
+		this.desUrl.setFont(new Font("宋体", 0, 12));
+		this.desUrl.setMaximumRowCount(10);
+		this.desUrl.setModel(new DefaultComboBoxModel<String>(new String[]{
+				"jdbc:postgresql://{host}:{port}/{database}",
+				"jdbc:sybase:Tds:{host}:{port}/{database}",
+				"jdbc:oracle:thin:@{host}:{port}:{database}",
+				"jdbc:mysql://{host}:{port}/{database}",
+				"jdbc:db2://{host}:{port}/{database}",
+				"jdbc:sqlserver://{host}:{port};DatabaseName={database}",
+				"jdbc:cubrid:{host}:{port}:{database}:::",
+				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}",
+				"jdbc:sqlite:{database}"}));
+		this.desUrl.setToolTipText(bundle.getString("The_target_connection_string,_please_replace_the_{}_with_proper_value"));
+		
 		this._$1.setText(bundle.getString("{UserName}"));
 		this._$1.setToolTipText(bundle.getString("Please_Input_source_usrename,_to_replace_{UserName}"));
 		this._$1.addMouseListener(new M1(this));
-		this._$5.setText(bundle.getString("password"));
-		this._$5.setToolTipText(bundle.getString("source_connection_password"));
-		this._$5.setName("srcPassword");
-		this._$5.addMouseListener(new M2(this));
+		this.srcPassword.setText(bundle.getString("password"));
+		this.srcPassword.setToolTipText(bundle.getString("source_connection_password"));
+		this.srcPassword.setName("srcPassword");
+		this.srcPassword.addMouseListener(new M2(this));
 		this._$2.setText(bundle.getString("{UserName}"));
 		this._$2.setToolTipText(bundle.getString("Please_input_target_connection_user_name,_replace_{UserName}"));
 		this._$2.addMouseListener(new MouseAdapter() {
@@ -186,10 +196,10 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		       _$3(evt);
 		    }
 		});
-		this._$20.setText(bundle.getString("password"));
-		this._$20.setToolTipText(bundle.getString("target_connection_password"));
-		this._$20.setName("desPassword");
-		this._$20.addMouseListener(new MouseAdapter() {
+		this.desPassword.setText(bundle.getString("password"));
+		this.desPassword.setToolTipText(bundle.getString("target_connection_password"));
+		this.desPassword.setName("desPassword");
+		this.desPassword.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 		        _$1(evt);
 		    }
@@ -320,14 +330,14 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 										.addComponent(this._$19, -1, -1, 32767).addComponent(this._$18, -1, 62, 32767))
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
-										.addComponent(this._$21, Alignment.LEADING, 0, 0, 32767).addComponent(this._$22,
+										.addComponent(this.desUrl, Alignment.LEADING, 0, 0, 32767).addComponent(this.srcUrl,
 												Alignment.LEADING, -2, 398, -2))
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addGroup(layout.createParallelGroup(Alignment.LEADING, false).addComponent(this._$1)
 										.addComponent(this._$2, -1, 73, 32767))
 								.addGap(14, 14, 14)
-								.addGroup(layout.createParallelGroup(Alignment.LEADING, false).addComponent(this._$20)
-										.addComponent(this._$5, -1, 64, 32767))
+								.addGroup(layout.createParallelGroup(Alignment.LEADING, false).addComponent(this.desPassword)
+										.addComponent(this.srcPassword, -1, 64, 32767))
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addGroup(layout.createParallelGroup(Alignment.LEADING).addComponent(this._$29)
 										.addComponent(this._$30))
@@ -361,14 +371,14 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(layout.createSequentialGroup()
 				.addContainerGap()
 				.addGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(Alignment.LEADING).addComponent(this._$22, -2, -1, -2)
+						.addGroup(layout.createParallelGroup(Alignment.LEADING).addComponent(this.srcUrl, -2, -1, -2)
 								.addComponent(this._$19).addComponent(this._$1, -2, -1, -2))
 						.addGap(13, 13, 13)
-						.addGroup(layout.createParallelGroup(Alignment.BASELINE).addComponent(this._$21, -2, -1, -2)
+						.addGroup(layout.createParallelGroup(Alignment.BASELINE).addComponent(this.desUrl, -2, -1, -2)
 								.addComponent(this._$18).addComponent(this._$2, -2, -1, -2)))
-						.addGroup(layout.createSequentialGroup().addComponent(this._$5, -2, -1, -2).addGap(15, 15, 15)
+						.addGroup(layout.createSequentialGroup().addComponent(this.srcPassword, -2, -1, -2).addGap(15, 15, 15)
 								.addGroup(layout.createParallelGroup(Alignment.BASELINE)
-										.addComponent(this._$20, -2, -1, -2).addComponent(this._$30, -2, 20,
+										.addComponent(this.desPassword, -2, -1, -2).addComponent(this._$30, -2, 20,
 												-2)
 										.addComponent(this._$25, -2, 20, -2)))
 						.addGroup(layout.createParallelGroup(Alignment.BASELINE).addComponent(this._$29, -2, 21, -2)
@@ -400,11 +410,11 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	}
 
 	private void _$2(MouseEvent evt) {
-		this._$5.setText("");
+		this.srcPassword.setText("");
 	}
 
 	private void _$1(MouseEvent evt) {
-		this._$20.setText("");
+		this.desPassword.setText("");
 	}
 
 	private void _$8(ActionEvent evt) {
@@ -413,7 +423,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 				this._$33.close();
 			}
 
-			this._$33 = new CommonDB(this._$22.getSelectedItem().toString(), this._$1.getText(), String.valueOf(this._$5.getPassword()), (Properties) null);
+			this._$33 = new CommonDB(this.srcUrl.getSelectedItem().toString(), this._$1.getText(), String.valueOf(this.srcPassword.getPassword()), (Properties) null);
 			List<String> ex = this._$33.getTables();
 			this._$16.setModel(new ListModel(ex));
 			this._$29.setBackground(Color.GREEN);
@@ -427,7 +437,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 
 	}
 
-	private void _$1(WindowEvent evt) {
+	// 关闭系统
+	private void closeWindowFrame(WindowEvent evt) {
 		try {
 			if (this._$33 != null) {
 				this._$33.close();
@@ -464,8 +475,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 				this._$32.close();
 			}
 
-			this._$32 = new CommonDB(this._$21.getSelectedItem().toString(), this._$2.getText(),
-					String.valueOf(this._$20.getPassword()), (Properties) null);
+			this._$32 = new CommonDB(this.desUrl.getSelectedItem().toString(), this._$2.getText(),
+					String.valueOf(this.desPassword.getPassword()), (Properties) null);
 			this.println(ResourceBundle.getBundle("com/sql9/jmetl/resources").getString("Target_DB_product_name:_")
 					+ this._$32.getDetails());
 			this.println(ResourceBundle.getBundle("com/sql9/jmetl/resources").getString("Target_DB_type:_")
@@ -529,7 +540,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	
 	
 	class M1 extends MouseAdapter {
-	    final /* synthetic */ MainFrame _$1;
+	    final MainFrame _$1;
 
 	    M1(MainFrame mainFrame) {
 	        this._$1 = mainFrame;
