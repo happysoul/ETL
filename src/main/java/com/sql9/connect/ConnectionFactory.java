@@ -1,9 +1,20 @@
-package com.sql9.db;
+package com.sql9.connect;
 
-import com.sql9.db.CommonDB.DBType;
+import com.sql9.db.ASAConnection;
+import com.sql9.db.ASEConnection;
+import com.sql9.db.AccessMDBConnection;
+import com.sql9.db.CubridConnection;
+import com.sql9.db.DB2Connection;
+import com.sql9.db.MysqlConnection;
+import com.sql9.db.OracleConnection;
+import com.sql9.db.PostgreSQLConnection;
+import com.sql9.db.SQLServerConnection;
+import com.sql9.db.SQLiteConnection;
+import com.sql9.enums.DBType;
 
-/* compiled from: Unknown Source */
+
 public class ConnectionFactory {
+	private ConnectionFactory(){}
     public static DBConnection createConnection(CommonDB db) throws Exception {
         DBType dbtype = db.getDbType();
         if (dbtype.equals(DBType.ASA)) {

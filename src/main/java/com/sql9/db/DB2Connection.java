@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import com.sql9.connect.CommonDB;
+import com.sql9.connect.DBConnection;
+
 public class DB2Connection extends DBConnection {
     public DB2Connection(CommonDB db) throws Exception {
         super(db);

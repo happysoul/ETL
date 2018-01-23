@@ -1,4 +1,4 @@
-package com.sql9.db;
+package com.sql9.connect;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,43 +13,15 @@ import java.util.TreeMap;
 
 import javax.sql.rowset.CachedRowSet;
 
-import com.sql9.db.CommonDB.DBType;
+import com.sql9.enums.DBType;
 import com.sql9.util.StringUtil;
 //import com.sun.rowset.CachedRowSetImpl;
 import com.sun.rowset.CachedRowSetImpl;
 
 public abstract class DBConnection {
     public static final int MAX_BATCH_COMMIT = 2000;
-    DBType _$1;
-    CommonDB _$2;
-
-    /* compiled from: Unknown Source */
-    public enum NULL {
-        VARCHAR(12),
-        INTEGER(4),
-        DOUBLE(8),
-        BOOLEAN(-7),
-        BYTE(-6),
-        VARBINARY(-3),
-        LONGVARBINARY(-4),
-        TIME(92),
-        TIMESTAMP(93),
-        DATE(91),
-        BIGINT(-5),
-        BINARY(-2),
-        FLOAT(6),
-        DECIMAL(3);
-        
-        private int _$2;
-
-        private NULL(int sqlType) {
-            this._$2 = sqlType;
-        }
-
-        public int getSqlType() {
-            return this._$2;
-        }
-    }
+    DBType dbType;
+    CommonDB db;
 
     protected abstract String _$1(boolean z, boolean z2, int i, boolean z3, int i2, int i3, int i4, int i5);
 
@@ -58,7 +30,7 @@ public abstract class DBConnection {
     public abstract void setParam(ResultSet resultSet, PreparedStatement preparedStatement, ResultSetMetaData resultSetMetaData, int i, Object obj) throws SQLException, IOException;
 
     protected void _$1(DBConnection dbconn, String t, String pk, TextWriter tw) {
-        if (!dbconn._$1.equals(DBType.SQLite)) {
+        if (!dbconn.dbType.equals(DBType.SQLite)) {
             if (pk == null) {
                 tw.println("       No PK exists in table: " + t);
                 return;
@@ -75,7 +47,18 @@ public abstract class DBConnection {
         }
     }
 
-    protected String _$1(DBConnection dbconn, ResultSetMetaData meta, String schema, String t, String pk, TextWriter tw) throws Exception {
+    /**
+     * 执行拼接创建DDL和插入数据
+     * @param dbconn
+     * @param meta
+     * @param schema
+     * @param t
+     * @param pk
+     * @param tw
+     * @return
+     * @throws Exception
+     */
+    protected String createTableAndInsert(DBConnection dbconn, ResultSetMetaData meta, String schema, String t, String pk, TextWriter tw) throws Exception {
         String insert = "insert into \"" + t + "\"(";
         String sql = "create table \"" + t + "\"(";
         try {
@@ -97,10 +80,11 @@ public abstract class DBConnection {
                     insert = insert + ", ";
                 }
             }
-            if (pk != null && dbconn._$1.equals(DBType.SQLite)) {
+            if (pk != null && dbconn.dbType.equals(DBType.SQLite)) {
                 sql = sql + "," + pk;
             }
             sql = sql + ")";
+            
             insert = insert + ") values (";
             for (i = 1; i <= count; i++) {
                 insert = insert + "?";
@@ -109,7 +93,7 @@ public abstract class DBConnection {
                 }
             }
             insert = insert + ")";
-            tw.println("       Table t DDL: " + sql);
+            tw.println("       Table ["+t+"] DDL: " + sql);
             Statement stmt = dbconn.getConnection().createStatement();
             stmt.executeUpdate(sql);
             stmt.close();
@@ -120,16 +104,16 @@ public abstract class DBConnection {
     }
 
     public DBConnection(CommonDB db) throws Exception {
-        this._$2 = db;
-        this._$1 = db.getDbType();
+        this.db = db;
+        this.dbType = db.getDbType();
     }
 
     public DatabaseMetaData getMetaData() {
-        return this._$2._$2;
+        return this.db.metaData;
     }
 
     public String getUserName() {
-        return this._$2.getUserName();
+        return this.db.getUserName();
     }
 
     protected int _$1(String schema, String tname, String col) throws SQLException {
@@ -223,21 +207,28 @@ public abstract class DBConnection {
         return t;
     }
 
+    /**
+     * 执行迁移数据
+     * @param dbconn
+     * @param tables
+     * @param tw
+     * @throws Exception
+     */
     public void importTo(DBConnection dbconn, List<String> tables, TextWriter tw) throws Exception {
-        List<String> targetList = dbconn._$2.getTablesWithoutPrefix();
+        List<String> targetList = dbconn.db.getTablesWithoutPrefix();
         for (String sName : tables) {
-            String o = _$2(sName);
-            String schema = _$1(sName);
-            tw.println("\r\n--- begin transfer table : " + o + " ---");
+            String o = checkTableNameAndSubString46(sName);
+            String schema = checkTableNameReturnNull(sName);
+            tw.println("\r\n--- 开始处理 Table : " + o + " ---");
             if (targetList.contains(o)) {
-                tw.println("       table: " + o + " already exists in the target Database.");
-                tw.println("--- end transfer table : " + o + " ---");
+                tw.println("       Table : " + o + " 目标库已经存在");
+                tw.println("--- 结束处理 Table : " + o + " ---");
             } else {
                 ResultSet rset;
                 int i;
                 String sql ="";
                 String pk = getPKString(o);
-                Statement srcStmt = this._$2.getConnection().createStatement();
+                Statement srcStmt = this.db.getConnection().createStatement();
                 try {
                     rset = srcStmt.executeQuery("select * from \"" + o + "\"");
                 } catch (SQLException e) {
@@ -256,14 +247,14 @@ public abstract class DBConnection {
                     }
                 }
                 try {
-                    if (!dbconn._$1.equals(DBType.Access)) {
+                    if (!dbconn.dbType.equals(DBType.Access)) {
                         dbconn.setAutoCommit(true);
                     }
                 } catch (SQLException e2) {
                     tw.println("       autocommit on setting warning...., ignored.");
                 }
                 try {
-                    sql = _$1(dbconn, meta, schema, o, pk, tw);
+                    sql = createTableAndInsert(dbconn, meta, schema, o, pk, tw);
                     if (hasIdentity) {
                         tw.println("       table: " + o + " has identity column. ");
                         dbconn.setIdentityInsertEnabled(o, identityCol, true, tw);
@@ -280,10 +271,10 @@ public abstract class DBConnection {
                     }
                     ResultSetMetaData desMeta = rsetTS.getMetaData();
                     rsetTS.close();
-                    if (!dbconn._$1.equals(DBType.Access)) {
+                    if (!dbconn.dbType.equals(DBType.Access)) {
                         dbconn.setAutoCommit(false);
                     }
-                    PreparedStatement pstmt = dbconn._$2.getConnection().prepareStatement(sql);
+                    PreparedStatement pstmt = dbconn.db.getConnection().prepareStatement(sql);
                     int total_rows = 0;
                     while (rset.next()) {
                         i = 1;
@@ -309,7 +300,7 @@ public abstract class DBConnection {
                     if (total_rows % MAX_BATCH_COMMIT > 0) {
                         dbconn.commit();
                     }
-                    if (!dbconn._$1.equals(DBType.Access)) {
+                    if (!dbconn.dbType.equals(DBType.Access)) {
                         dbconn.setAutoCommit(true);
                     }
                     tw.println("       table:  " + o + " transfered : [" + total_rows + "] rows. ");
@@ -335,7 +326,7 @@ public abstract class DBConnection {
     }
 
     public Connection getConnection() {
-        return this._$2.getConnection();
+        return this.db.getConnection();
     }
 
     public ResultSet executeQuery(String sql, Object[] params) throws SQLException {
@@ -383,7 +374,7 @@ public abstract class DBConnection {
         } catch (SQLException e) {
             tw.println("       identity_insert ON/OFF setting is not supported");
         }
-        if (this._$1 == DBType.Oracle && !enabled) {
+        if (this.dbType == DBType.Oracle && !enabled) {
             long maxIdent = 1;
             if (identityCol != null) {
                 try {
@@ -410,24 +401,24 @@ public abstract class DBConnection {
     }
 
     public void setAutoCommit(boolean enabled) throws SQLException {
-        this._$2.getConnection().setAutoCommit(enabled);
+        this.db.getConnection().setAutoCommit(enabled);
     }
 
     public boolean getAutoCommit() throws SQLException {
-        return this._$2.getConnection().getAutoCommit();
+        return this.db.getConnection().getAutoCommit();
     }
 
     public void commit() throws SQLException {
-        this._$2.getConnection().commit();
+        this.db.getConnection().commit();
     }
 
     public void rollback() throws SQLException {
-        this._$2.getConnection().rollback();
+        this.db.getConnection().rollback();
     }
 
     public String getPKString(String t) throws SQLException {
         String pk = null;
-        ResultSet rs = this._$2._$2.getPrimaryKeys(null, null, t);
+        ResultSet rs = this.db.metaData.getPrimaryKeys(null, null, t);
         StringBuilder sb = new StringBuilder();
         TreeMap<Integer, String> pksMap = new TreeMap<Integer, String>();
         while (rs.next()) {
@@ -445,14 +436,14 @@ public abstract class DBConnection {
         return pk;
     }
 
-    protected String _$2(String fullTableName) {
+    protected String checkTableNameAndSubString46(String fullTableName) {
         if (fullTableName.indexOf(46) >= 0) {
             return fullTableName.substring(fullTableName.indexOf(46) + 1);
         }
         return fullTableName;
     }
 
-    protected String _$1(String fullTableName) {
+    protected String checkTableNameReturnNull(String fullTableName) {
         if (fullTableName.indexOf(46) >= 0) {
             return fullTableName.substring(0, fullTableName.indexOf(46));
         }

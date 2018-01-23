@@ -14,67 +14,53 @@ import org.jdesktop.layout.GroupLayout;
 
 public class AboutFrame extends JDialog {
 	private static final long serialVersionUID = 1L;
-	private JButton _$3;
-	private JLabel _$2;
-	private JLabel _$1;
+	private JButton button;
+	private JLabel lab1;
+	private JLabel lab2;
 
 	public AboutFrame() {
-		this._$1();
+		this.about();
 	}
 
-	private void _$1() {
-		this._$2 = new JLabel();
-		this._$3 = new JButton();
-		this._$1 = new JLabel();
+	private void about() {
+		this.lab1 = new JLabel();
+		this.button = new JButton();
+		this.lab2 = new JLabel();
 		this.setTitle("About");
-		this._$2.setHorizontalAlignment(2);
-		this._$2.setText(
-				"<html><body><p> <b>Welcome!</b><br> This is JMyETL.[ Version 1.0.8]<br> Designed by Xiong HE. (iihero@CSDN) <br> mail: hexiong@gmail.com<br> MSN: iiihero@hotmail.com<br>   </body></html> ");
-		this._$2.setVerticalAlignment(1);
-		this._$3.setText("OK");
-		this._$3.addActionListener(new lllIIIlllIIllIII(this));
-		this._$1.setIcon(new ImageIcon(this.getClass().getResource("/JMyETL_middle.png")));
+		this.lab1.setHorizontalAlignment(2);
+		this.lab1.setText( "<html><body><p> <b>Welcome!</b><br> This is JMyETL.[ Version 1.0.8]<br> Designed by Xiong HE. (iihero@CSDN) <br> mail: hexiong@gmail.com<br> MSN: iiihero@hotmail.com<br>   </body></html> ");
+		this.lab1.setVerticalAlignment(1);
+		this.button.setText("OK");
+		this.button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dis(e);
+			}
+		});
+		this.lab2.setIcon(new ImageIcon(this.getClass().getResource("/JMyETL_middle.png")));
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		this.getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(1)
-				.add(2, layout.createSequentialGroup().addContainerGap(166, 32767).add(this._$3, -2, 73, -2).add(171,
-						171, 171))
+				.add(2, layout.createSequentialGroup().addContainerGap(166, 32767).add(this.button, -2, 73, -2).add(171, 171, 171))
 				.add(2, layout.createSequentialGroup().add(45, 45, 45).add(
-						layout.createParallelGroup(2).add(1, this._$2, -1, 355, 32767).add(1, this._$1, -1, 355, 32767))
-						.addContainerGap()));
+						layout.createParallelGroup(2).add(1, this.lab1, -1, 355, 32767).add(1, this.lab2, -1, 355, 32767)) .addContainerGap()));
 		layout.setVerticalGroup(layout.createParallelGroup(1).add(2,
-				layout.createSequentialGroup().addContainerGap().add(this._$2, -2, 127, -2).add(18, 18, 18)
-						.add(this._$1, -1, 109, 32767).addPreferredGap(0).add(this._$3).addContainerGap()));
+				layout.createSequentialGroup().addContainerGap().add(this.lab1, -2, 127, -2).add(18, 18, 18)
+						.add(this.lab2, -1, 109, 32767).addPreferredGap(0).add(this.button).addContainerGap()));
 		this.pack();
 	}
 
-	private void _$1(ActionEvent evt) {
+	private void dis(ActionEvent evt) {
 		this.dispose();
 	}
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Ra());
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new AboutFrame().setVisible(true);
+			}
+		});
 	}
-	
-	class lllIIIlllIIllIII implements ActionListener {
-	    final /* synthetic */ AboutFrame _$1;
-
-	    lllIIIlllIIllIII(AboutFrame aboutFrame) {
-	        this._$1 = aboutFrame;
-	    }
-
-	    public void actionPerformed(ActionEvent evt) {
-	        this._$1._$1(evt);
-	    }
-	}
-}
-
-class Ra implements Runnable {
-	Ra() {
-    }
-
-    public void run() {
-        new AboutFrame().setVisible(true);
-    }
 }
 

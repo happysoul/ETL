@@ -1,6 +1,5 @@
-package com.sql9.db;
+package com.sql9.connect;
 
-/* compiled from: Unknown Source */
 public interface TextWriter {
     void println(String str);
 }

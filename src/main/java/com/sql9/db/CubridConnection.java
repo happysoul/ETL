@@ -17,6 +17,10 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import com.sql9.connect.CommonDB;
+import com.sql9.connect.DBConnection;
+import com.sql9.enums.SqlType;
+
 public class CubridConnection extends DBConnection {
     public CubridConnection(CommonDB db) throws Exception {
         super(db);
@@ -99,8 +103,8 @@ public class CubridConnection extends DBConnection {
     }
 
     public void setParam(PreparedStatement stmt, int i, Object obj) throws SQLException {
-        if (obj instanceof NULL) {
-            stmt.setNull(i, ((NULL) obj).getSqlType());
+        if (obj instanceof SqlType) {
+            stmt.setNull(i, ((SqlType) obj).getSqlType());
         } else if (obj instanceof String) {
             stmt.setString(i, (String) obj);
         } else if (obj instanceof Integer) {

@@ -13,7 +13,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -42,8 +41,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.sql9.db.CommonDB;
-import com.sql9.db.TextWriter;
+import com.sql9.connect.CommonDB;
+import com.sql9.connect.TextWriter;
 import com.sql9.util.StringUtil;
 
 public class MainFrame extends JFrame implements TextWriter, ChangeListener {
@@ -65,7 +64,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	private JLabel _$19;
 	private JLabel _$18;
 	private JLabel _$17;
-	private JList _$16;
+	private JList<String> _$16;
 	private JMenu _$15;
 	private JMenu _$14;
 	private JMenuBar _$13;
@@ -113,7 +112,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 		this._$2 = new JTextField();
 		this._$20 = new JPasswordField();
 		this._$8 = new JScrollPane();
-		this._$16 = new JList();
+		this._$16 = new JList<String>();
 		this._$28 = new JButton();
 		this._$29 = new JButton();
 		this._$30 = new JButton();
@@ -175,11 +174,11 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 				bundle.getString("The_target_connection_string,_please_replace_the_{}_with_proper_value"));
 		this._$1.setText(bundle.getString("{UserName}"));
 		this._$1.setToolTipText(bundle.getString("Please_Input_source_usrename,_to_replace_{UserName}"));
-		this._$1.addMouseListener(new IIIllllIIlIllIII(this));
+		this._$1.addMouseListener(new M1(this));
 		this._$5.setText(bundle.getString("password"));
 		this._$5.setToolTipText(bundle.getString("source_connection_password"));
 		this._$5.setName("srcPassword");
-		this._$5.addMouseListener(new lIIllllIIlIllIII(this));
+		this._$5.addMouseListener(new M2(this));
 		this._$2.setText(bundle.getString("{UserName}"));
 		this._$2.setToolTipText(bundle.getString("Please_input_target_connection_user_name,_replace_{UserName}"));
 		this._$2.addMouseListener(new MouseAdapter() {
@@ -414,17 +413,13 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 				this._$33.close();
 			}
 
-			this._$33 = new CommonDB(this._$22.getSelectedItem().toString(), this._$1.getText(),
-					String.valueOf(this._$5.getPassword()), (Properties) null);
+			this._$33 = new CommonDB(this._$22.getSelectedItem().toString(), this._$1.getText(), String.valueOf(this._$5.getPassword()), (Properties) null);
 			List<String> ex = this._$33.getTables();
-			ListModel model = new ListModel(ex);
-			this._$16.setModel(model);
+			this._$16.setModel(new ListModel(ex));
 			this._$29.setBackground(Color.GREEN);
 			this._$3.setText("");
-			this.println(ResourceBundle.getBundle("com/sql9/jmetl/resources").getString("Product_name:_")
-					+ this._$33.getDetails());
-			this.println(ResourceBundle.getBundle("com/sql9/jmetl/resources").getString("DB_type:_")
-					+ this._$33.getDbType());
+			this.println(ResourceBundle.getBundle("com/sql9/jmetl/resources").getString("Product_name:_") + this._$33.getDetails());
+			this.println(ResourceBundle.getBundle("com/sql9/jmetl/resources").getString("DB_type:_") + this._$33.getDbType());
 		} catch (Exception arg3) {
 			this.println("caused by: ---------->");
 			this.println(StringUtil.getStackInfoFromException(arg3));
@@ -453,17 +448,7 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 
 	private void _$7(ActionEvent evt) {
 		try {
-			Object[] ex = this._$16.getSelectedValues();
-			ArrayList tables = new ArrayList();
-			String tmp = null;
-			Object[] arr$ = ex;
-			int len$ = ex.length;
-
-			for (int i$ = 0; i$ < len$; ++i$) {
-				Object o = arr$[i$];
-				tmp = (String) o;
-				tables.add(tmp);
-			}
+			List<String> tables = this._$16.getSelectedValuesList();
 
 			(new TransferDataProgressThread(this._$9, this._$33, this._$32, tables, this)).start();
 			this._$28.setEnabled(false);
@@ -543,10 +528,10 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	}
 	
 	
-	class IIIllllIIlIllIII extends MouseAdapter {
+	class M1 extends MouseAdapter {
 	    final /* synthetic */ MainFrame _$1;
 
-	    IIIllllIIlIllIII(MainFrame mainFrame) {
+	    M1(MainFrame mainFrame) {
 	        this._$1 = mainFrame;
 	    }
 
@@ -555,10 +540,10 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	    }
 	}
 	
-	class lIIllllIIlIllIII extends MouseAdapter {
-	    final /* synthetic */ MainFrame _$1;
+	class M2 extends MouseAdapter {
+	    final  MainFrame _$1;
 
-	    lIIllllIIlIllIII(MainFrame mainFrame) {
+	    M2(MainFrame mainFrame) {
 	        this._$1 = mainFrame;
 	    }
 
@@ -567,7 +552,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 	    }
 	}
 }
-class ListModel extends DefaultListModel {
+class ListModel extends DefaultListModel<String> {
+	private static final long serialVersionUID = 1L;
 	ListModel(List<String> res) {
         for (String s : res) {
             addElement(s);

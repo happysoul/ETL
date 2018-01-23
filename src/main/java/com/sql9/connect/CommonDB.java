@@ -1,4 +1,4 @@
-package com.sql9.db;
+package com.sql9.connect;
 
 import java.io.File;
 import java.sql.Connection;
@@ -11,77 +11,63 @@ import java.util.List;
 import java.util.Properties;
 
 import com.myetl.MDBUtil;
+import com.sql9.enums.DBType;
 
 public class CommonDB {
-    protected DriverInfo _$1;
-    protected DatabaseMetaData _$2;
-    private Connection _$3;
-    protected Properties _$4;
-    private String _$5;
-    private String _$6;
-    private String _$7;
-
-    /* compiled from: Unknown Source */
-    public enum DBType {
-        ASE,
-        ASA,
-        PostgreSQL,
-        DB2,
-        Oracle,
-        SQLServer,
-        ADS,
-        MySQL,
-        SQLite,
-        Access,
-        CUBRID
-    }
+    protected DriverInfo driverInfo;
+    protected DatabaseMetaData metaData;
+    private Connection connection;
+    protected Properties props;
+    private String password;
+    private String username;
+    private String url;
 
     public String getUserName() {
-        return this._$6;
+        return this.username;
     }
 
     public CommonDB(String url, String username, String password, Properties props) throws Exception {
-        this._$7 = url;
-        this._$6 = username;
-        this._$5 = password;
-        this._$4 = props;
-        DriverInfo di = DriverInfo.searchFromUrl(this._$7);
-        Class.forName(di._$16);
-        if (di._$15.startsWith("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=")) {
-            String dbfile = this._$7.substring("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=".length());
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.props = props;
+        DriverInfo di = DriverInfo.searchFromUrl(this.url);
+        Class.forName(di.driver);
+        if (di.url.startsWith("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=")) {
+            String dbfile = this.url.substring("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=".length());
             if (!new File(dbfile).exists()) {
                 MDBUtil.createMDB(dbfile);
             }
         }
         if (di.equals(DriverInfo._$14) || di.equals(DriverInfo._$13)) {
-            this._$7 += "?DYNAMIC_PREPARE=true";
+            this.url += "?DYNAMIC_PREPARE=true";
         } else if (di.equals(DriverInfo._$8)) {
-            this._$7 += "?useunicode=true&characterEncoding=utf8";
+            this.url += "?useunicode=true&characterEncoding=utf8";
         } else if (di.equals(DriverInfo._$2)) {
-            this._$7 += "?charset=utf-8";
+            this.url += "?charset=utf-8";
         }
-        this._$3 = DriverManager.getConnection(this._$7, this._$6, this._$5);
-        this._$2 = this._$3.getMetaData();
-        this._$1 = di;
+        this.connection = DriverManager.getConnection(this.url, this.username, this.password);
+        this.metaData = this.connection.getMetaData();
+        this.driverInfo = di;
     }
 
     public Connection getConnection() {
-        return this._$3;
+        return this.connection;
     }
 
     public void close() throws SQLException {
-        if (this._$3 != null) {
-            if (!this._$3.getAutoCommit()) {
-                this._$3.commit();
+        if (this.connection != null) {
+            if (!this.connection.getAutoCommit()) {
+                this.connection.commit();
             }
-            this._$3.close();
-            this._$3 = null;
+            this.connection.close();
+            this.connection = null;
         }
     }
 
     public List<String> getTables() throws SQLException {
         List<String> res = new ArrayList<String>();
-        ResultSet rset = this._$2.getTables(null, null, null, new String[]{"TABLE"});
+        ResultSet rset = this.metaData.getTables(null, null, null, new String[]{"TABLE"});
         while (rset.next()) {
             String schema = rset.getString("TABLE_SCHEM");
             if (schema == null) {
@@ -96,7 +82,7 @@ public class CommonDB {
 
     public List<String> getTablesWithoutPrefix() throws SQLException {
         List<String> res = new ArrayList<String>();
-        ResultSet rset = this._$2.getTables(null, null, null, new String[]{"TABLE"});
+        ResultSet rset = this.metaData.getTables(null, null, null, new String[]{"TABLE"});
         while (rset.next()) {
             res.add(rset.getString("TABLE_NAME"));
         }
@@ -106,48 +92,48 @@ public class CommonDB {
 
     public String getDetails() throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(this._$2.getDatabaseProductName() + " [version: ");
-        sb.append(this._$2.getDatabaseProductVersion() + "] ");
-        sb.append(" [Driver:   " + this._$2.getDriverName() + " [version: ");
-        sb.append(this._$2.getDriverVersion() + "]]");
+        sb.append(this.metaData.getDatabaseProductName() + " [version: ");
+        sb.append(this.metaData.getDatabaseProductVersion() + "] ");
+        sb.append(" [Driver:   " + this.metaData.getDriverName() + " [version: ");
+        sb.append(this.metaData.getDriverVersion() + "]]");
         return sb.toString();
     }
 
     public String getDbProductName() throws Exception {
-        return this._$2.getDatabaseProductName();
+        return this.metaData.getDatabaseProductName();
     }
 
     public DBType getDbType() throws Exception {
-        if (this._$1.equals(DriverInfo._$11)) {
+        if (this.driverInfo.equals(DriverInfo._$11)) {
             return DBType.ADS;
         }
-        if (this._$1.equals(DriverInfo._$6)) {
+        if (this.driverInfo.equals(DriverInfo._$6)) {
             return DBType.SQLServer;
         }
-        if (this._$1.equals(DriverInfo._$8)) {
+        if (this.driverInfo.equals(DriverInfo._$8)) {
             return DBType.MySQL;
         }
-        if (this._$1.equals(DriverInfo._$10)) {
+        if (this.driverInfo.equals(DriverInfo._$10)) {
             return DBType.Oracle;
         }
-        if (this._$1.equals(DriverInfo._$9)) {
+        if (this.driverInfo.equals(DriverInfo._$9)) {
             return DBType.PostgreSQL;
         }
-        if (this._$1.equals(DriverInfo._$7)) {
+        if (this.driverInfo.equals(DriverInfo._$7)) {
             return DBType.DB2;
         }
-        if (this._$1.equals(DriverInfo._$4)) {
+        if (this.driverInfo.equals(DriverInfo._$4)) {
             return DBType.SQLite;
         }
-        if (this._$1.equals(DriverInfo._$3)) {
+        if (this.driverInfo.equals(DriverInfo._$3)) {
             return DBType.Access;
         }
-        if (this._$1.equals(DriverInfo._$14)) {
+        if (this.driverInfo.equals(DriverInfo._$14)) {
             if (getDbProductName().equals("Adaptive Server Enterprise")) {
                 return DBType.ASE;
             }
             return DBType.ASA;
-        } else if (this._$1.equals(DriverInfo._$2)) {
+        } else if (this.driverInfo.equals(DriverInfo._$2)) {
             return DBType.CUBRID;
         } else {
             return null;
@@ -155,9 +141,9 @@ public class CommonDB {
     }
 
     public void importDataToTargetDB(CommonDB targetDB, List<String> tables, TextWriter tw) throws Exception {
-        if (this._$3.isClosed()) {
+        if (this.connection.isClosed()) {
             tw.println("The connection of the source db is closed.");
-        } else if (targetDB._$3.isClosed()) {
+        } else if (targetDB.connection.isClosed()) {
             tw.println("The connection of the target db is closed.");
         } else {
             ConnectionFactory.createConnection(this).importTo(ConnectionFactory.createConnection(targetDB), tables, tw);
@@ -165,9 +151,9 @@ public class CommonDB {
     }
 
     public void importDataToTargetDB(CommonDB targetDB, String table, TextWriter tw) throws Exception {
-        if (this._$3.isClosed()) {
+        if (this.connection.isClosed()) {
             tw.println("The connection of the source db is closed.");
-        } else if (targetDB._$3.isClosed()) {
+        } else if (targetDB.connection.isClosed()) {
             tw.println("The connection of the target db is closed.");
         } else {
             DBConnection conn = ConnectionFactory.createConnection(this);

@@ -16,7 +16,11 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-class MysqlConnection extends DBConnection {
+import com.sql9.connect.CommonDB;
+import com.sql9.connect.DBConnection;
+import com.sql9.enums.SqlType;
+
+public class MysqlConnection extends DBConnection {
     public MysqlConnection(CommonDB db) throws Exception {
         super(db);
         executeUpdate("SET sql_mode='ANSI_QUOTES'", new Object[0]);
@@ -24,9 +28,9 @@ class MysqlConnection extends DBConnection {
 
     protected String _$1(boolean isAutoIncrement, boolean isSigned, int isNullable, boolean isAutoIdentity, int stdType, int length, int precision, int scale) {
         String t = "";
-        if (isAutoIncrement) {
-            return t + " BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE ";
-        }
+//        if (isAutoIncrement) {
+//            return t + " BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE ";
+//        }
         if (precision < scale) {
             precision = length;
         }
@@ -95,6 +99,11 @@ class MysqlConnection extends DBConnection {
                 t = "VARCHAR(" + length + ")";
                 break;
         }
+        //修改主键位置到此处
+        if (isAutoIncrement) {
+            return t + " NOT NULL AUTO_INCREMENT UNIQUE ";
+        }
+        
         if (isNullable == 1) {
             return t + " NULL";
         }
@@ -102,8 +111,8 @@ class MysqlConnection extends DBConnection {
     }
 
     public void setParam(PreparedStatement stmt, int i, Object obj) throws SQLException {
-        if (obj instanceof NULL) {
-            stmt.setNull(i, ((NULL) obj).getSqlType());
+        if (obj instanceof SqlType) {
+            stmt.setNull(i, ((SqlType) obj).getSqlType());
         } else if (obj instanceof String) {
             stmt.setString(i, (String) obj);
         } else if (obj instanceof Integer) {
