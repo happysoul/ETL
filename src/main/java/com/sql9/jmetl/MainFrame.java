@@ -163,7 +163,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 				"jdbc:db2://{host}:{port}/{database}",
 				"jdbc:sqlserver://{host}:{port};DatabaseName={database}",
 				"jdbc:cubrid:{host}:{port}:{database}:::",
-				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}",
+//				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}",
+				"jdbc:ucanaccess://{database}",
 				"jdbc:sqlite:{database}"}));
 		this.srcUrl.setToolTipText(bundle.getString("The_source_connection_string,_please_replace_the_{}_with_proper_value"));
 		
@@ -178,7 +179,8 @@ public class MainFrame extends JFrame implements TextWriter, ChangeListener {
 				"jdbc:db2://{host}:{port}/{database}",
 				"jdbc:sqlserver://{host}:{port};DatabaseName={database}",
 				"jdbc:cubrid:{host}:{port}:{database}:::",
-				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}",
+//				"jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ={database}",
+				"jdbc:ucanaccess://{database}",
 				"jdbc:sqlite:{database}"}));
 		this.desUrl.setToolTipText(bundle.getString("The_target_connection_string,_please_replace_the_{}_with_proper_value"));
 		

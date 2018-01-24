@@ -93,6 +93,13 @@ public abstract class DBConnection {
                 }
             }
             insert = insert + ")";
+            
+            //access需要处理双引号
+            if(dbconn.dbType==DBType.Access){
+            	sql = sql.replaceAll("\"", "");
+            	insert = insert.replace("\"", "");
+            }
+            
             tw.println("       Table ["+t+"] DDL: " + sql);
             Statement stmt = dbconn.getConnection().createStatement();
             stmt.executeUpdate(sql);

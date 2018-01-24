@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.myetl.MDBUtil;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.sql9.enums.DBType;
 
 public class CommonDB {
@@ -33,17 +34,21 @@ public class CommonDB {
         this.props = props;
         DriverInfo di = DriverInfo.searchFromUrl(this.url);
         Class.forName(di.driver);
-        if (di.url.startsWith("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=")) {
-            String dbfile = this.url.substring("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=".length());
+//		if (di.url.startsWith("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=")) {
+    	if (di.url.startsWith("jdbc:ucanaccess://")) {
+//			String dbfile = this.url.substring("jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=".length());
+            String dbfile = this.url.substring("jdbc:ucanaccess://".length());
             if (!new File(dbfile).exists()) {
-                MDBUtil.createMDB(dbfile);
+//				MDBUtil.createMDB(dbfile);
+            	//创建mdb文件
+            	DatabaseBuilder.create(Database.FileFormat.V2000, new File(dbfile));
             }
         }
-        if (di.equals(DriverInfo._$14) || di.equals(DriverInfo._$13)) {
+        if (di.equals(DriverInfo.ase) || di.equals(DriverInfo.asa)) {
             this.url += "?DYNAMIC_PREPARE=true";
-        } else if (di.equals(DriverInfo._$8)) {
+        } else if (di.equals(DriverInfo.mysql)) {
             this.url += "?useunicode=true&characterEncoding=utf8";
-        } else if (di.equals(DriverInfo._$2)) {
+        } else if (di.equals(DriverInfo.cubrid)) {
             this.url += "?charset=utf-8";
         }
         this.connection = DriverManager.getConnection(this.url, this.username, this.password);
@@ -104,36 +109,36 @@ public class CommonDB {
     }
 
     public DBType getDbType() throws Exception {
-        if (this.driverInfo.equals(DriverInfo._$11)) {
+        if (this.driverInfo.equals(DriverInfo.ads)) {
             return DBType.ADS;
         }
-        if (this.driverInfo.equals(DriverInfo._$6)) {
+        if (this.driverInfo.equals(DriverInfo.mssql)) {
             return DBType.SQLServer;
         }
-        if (this.driverInfo.equals(DriverInfo._$8)) {
+        if (this.driverInfo.equals(DriverInfo.mysql)) {
             return DBType.MySQL;
         }
-        if (this.driverInfo.equals(DriverInfo._$10)) {
+        if (this.driverInfo.equals(DriverInfo.oracle)) {
             return DBType.Oracle;
         }
-        if (this.driverInfo.equals(DriverInfo._$9)) {
+        if (this.driverInfo.equals(DriverInfo.postgresql)) {
             return DBType.PostgreSQL;
         }
-        if (this.driverInfo.equals(DriverInfo._$7)) {
+        if (this.driverInfo.equals(DriverInfo.db2)) {
             return DBType.DB2;
         }
-        if (this.driverInfo.equals(DriverInfo._$4)) {
+        if (this.driverInfo.equals(DriverInfo.sqlite)) {
             return DBType.SQLite;
         }
-        if (this.driverInfo.equals(DriverInfo._$3)) {
+        if (this.driverInfo.equals(DriverInfo.mdb)) {
             return DBType.Access;
         }
-        if (this.driverInfo.equals(DriverInfo._$14)) {
+        if (this.driverInfo.equals(DriverInfo.ase)) {
             if (getDbProductName().equals("Adaptive Server Enterprise")) {
                 return DBType.ASE;
             }
             return DBType.ASA;
-        } else if (this.driverInfo.equals(DriverInfo._$2)) {
+        } else if (this.driverInfo.equals(DriverInfo.cubrid)) {
             return DBType.CUBRID;
         } else {
             return null;

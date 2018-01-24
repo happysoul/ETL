@@ -36,8 +36,10 @@ public class AccessMDBConnection extends DBConnection {
                     t = "SHORT";
                     break;
                 case -5:
+                	//int类型
                 case 4:
-                    t = isSigned ? "INT" : "INT";
+//					t = isSigned ? "INT" : "INT";
+                    t = isSigned ? "INTEGER" : "INTEGER";
                     break;
                 case -4:
                 case 2004:
@@ -92,8 +94,9 @@ public class AccessMDBConnection extends DBConnection {
                     t = "VARCHAR(" + length + ")";
                     break;
             }
+        }else{
+        	t = t + " COUNTER PRIMARY KEY ";
         }
-        t = t + " AUTOINCREMENT ";
         if (isNullable == 1) {
             return t + " NULL";
         }

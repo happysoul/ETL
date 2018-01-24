@@ -7,12 +7,12 @@
 	<version>1.0</version>
 	<name>etl Maven Webapp</name>
 	<url>http://maven.apache.org</url>
-	
-	
+
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<!-- 设定maven主仓库 -->
 	<repositories>
 		<repository>
@@ -29,7 +29,7 @@
 			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -55,16 +55,32 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.21.0.1</version>
 		</dependency>
+
+		<!-- access -->
+		<dependency>
+			<groupId>net.sf.ucanaccess</groupId>
+			<artifactId>ucanaccess</artifactId>
+			<version>4.0.3</version>
+		</dependency>
+		<!-- 读取access加密文件 -->
+		<dependency>
+			<groupId>com.healthmarketscience.jackcess</groupId>
+			<artifactId>jackcess-encrypt</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.40</version>
 		</dependency>
+
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
@@ -134,7 +150,6 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/xmlparserv2.jar</systemPath>
 		</dependency>
-
 	</dependencies>
 
 	<build>
